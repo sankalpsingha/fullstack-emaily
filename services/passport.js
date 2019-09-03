@@ -3,6 +3,16 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
 const User = mongoose.model('users');
 
+passport.serializeUser((user, done) => {
+	done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+	User.findById(id).then(val => {
+		done(null, val);
+	});
+});
+
 passport.use(
 	new GoogleStrategy(
 		{
@@ -12,9 +22,18 @@ passport.use(
 			callbackURL: '/auth/google/callback'
 		},
 		(accessToken, refreshToken, profile, done) => {
-			new User({
+			User.findOne({
 				googleId: profile.id
-			}).save();
+			}).then(existingUser => {
+				if (existingUser) {
+					// This is the callback for google that user has been found and done.
+					done(null, existingUser);
+				} else {
+					new User({ googleId: profile.id }).save().then(user => {
+						done(null, user);
+					});
+				}
+			});
 		}
 	)
 );

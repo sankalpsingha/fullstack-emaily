@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const cookieSession = require('cookie-session');
 
 require('./models/User');
 require('./services/passport');
@@ -9,6 +11,16 @@ mongoose.connect('mongodb://localhost:27017/dummyapp', {
 });
 
 const app = express();
+
+app.use(
+	cookieSession({
+		maxAge: 30 * 24 * 60 * 60 * 1000,
+		keys: ['asdfasdfkljljio'] // Dont forget that it is an array. I was getting error because of missing []
+	})
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 require('./routes/authRoutes')(app);
 
