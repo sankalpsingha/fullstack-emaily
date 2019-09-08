@@ -1,11 +1,27 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import authReducer from '../reducers/authReducer';
 
-export default class Header extends Component {
+class Header extends Component {
 	render() {
 		return (
-			<div>
-				<h1>I am the header</h1>
-			</div>
+			<nav>
+				<div className="nav-wrapper">
+					<a className="left brand-logo">Emaily</a>
+					<ul id="nav-mobile" className="right hide-on-med-and-down">
+						<li>
+							<a>Sign with Google</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
 		);
 	}
 }
+
+const mapStateToProps = state => {
+	return {
+		auth: state.auth
+	};
+};
+export default connect(mapStateToProps)(Header);
